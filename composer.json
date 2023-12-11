@@ -13,12 +13,12 @@
   },
   "autoload": {
       "psr-4": {
-          "Ja\\Plaid\\": "src"
+          "Ja\\LaravelPlaid\\": "src"
       }
   },
   "autoload-dev": {
       "psr-4": {
-          "Ja\\Plaid\\Tests\\": "tests"
+          "Ja\\LaravelPlaid\\Tests\\": "tests"
       }
   },
   "config": {
@@ -27,7 +27,7 @@
   "extra": {
       "laravel": {
           "providers": [
-              "Ja\\Plaid\\Providers\\ServiceProvider"
+              "Ja\\LaravelPlaid\\Providers\\ServiceProvider"
           ]
       }
   }

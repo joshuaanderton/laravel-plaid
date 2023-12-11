@@ -1,6 +1,6 @@
 <?php
 
-namespace Ja\Plaid\Actions;
+namespace Ja\LaravelPlaid\Actions;
 
 use App\Models\Account;
 use App\Models\Category;

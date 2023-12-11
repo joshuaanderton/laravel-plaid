@@ -1,11 +1,11 @@
 <?php
 
-namespace Ja\Plaid\Actions;
+namespace Ja\LaravelPlaid\Actions;
 
 use App\Models\PlaidConnector;
 use App\Services\PlaidTransactions;
-use Ja\Plaid\Actions\CreateTransaction;
-use Ja\Plaid\Actions\UpdateTransaction;
+use Ja\LaravelPlaid\Actions\CreateTransaction;
+use Ja\LaravelPlaid\Actions\UpdateTransaction;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 class ImportTransactions

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ja\Plaid\Http\Controllers;
+namespace Ja\LaravelPlaid\Http\Controllers;
 
 use Exception;
 use App\Models\PlaidConnector;
@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Inertia\Inertia;
-use Ja\Plaid\Actions\ImportAccounts;
+use Ja\LaravelPlaid\Actions\ImportAccounts;
 
 class PlaidConnectorsController
 {

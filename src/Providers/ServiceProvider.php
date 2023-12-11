@@ -1,13 +1,13 @@
 <?php
 
-namespace Ja\Plaid\Providers;
+namespace Ja\LaravelPlaid\Providers;
 
 use Illuminate\Support\Str;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
-use Ja\Plaid\Http\Controllers\PlaidConnectorsController;
-use Ja\Plaid\Http\Controllers\PlaidWebhooksController;
+use Ja\LaravelPlaid\Http\Controllers\PlaidConnectorsController;
+use Ja\LaravelPlaid\Http\Controllers\PlaidWebhooksController;
 
 class ServiceProvider extends BaseServiceProvider
 {

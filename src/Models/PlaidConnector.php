@@ -1,9 +1,8 @@
 <?php
 
-namespace Ja\Plaid\Models;
+namespace Ja\LaravelPlaid\Models;
 
-use App\Enums\PlaidConnectorEnvEnum;
-use Ja\Plaid\Models\Casts\EnumArrayPropertyCast;
+use Ja\LaravelPlaid\Enums\PlaidConnectorEnvEnum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
