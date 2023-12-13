@@ -27,10 +27,7 @@ class ImportTransactions
 
         if ($added->count() > 0) {
             $added->chunk(50)->map(fn ($chunk) => $chunk->map(fn ($data) => (
-                CreateTransaction::dispatch(
-                    plaidConnector: $plaidConnector,
-                    transactionData: $data
-                )
+                CreateTransaction::dispatch($plaidConnector, $data)
             )));
         }
 
@@ -40,10 +37,7 @@ class ImportTransactions
 
         if ($modified->count() > 0) {
             $modified->chunk(50)->map(fn ($chunk) => $chunk->map(fn ($data) => (
-                UpdateTransaction::dispatch(
-                    plaidConnector: $plaidConnector,
-                    transactionData: $data
-                )
+                UpdateTransaction::dispatch($plaidConnector, $data)
             )));
         }
 

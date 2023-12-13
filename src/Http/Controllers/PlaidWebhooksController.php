@@ -9,6 +9,6 @@ class PlaidWebhooksController
 {
     public function store()
     {
-
+        return response()->json();
     }
 }

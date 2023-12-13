@@ -4,6 +4,7 @@ namespace Ja\LaravelPlaid\Actions;
 
 use App\Models\Account;
 use App\Models\PlaidConnector;
+use Exception;
 use Illuminate\Support\Str;
 use TomorrowIdeas\Plaid\Plaid;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -23,16 +24,16 @@ class ImportAccounts
             env('PLAID_SECRET_KEY'),
             env('PLAID_ENV')
         );
-        $options = [];
 
         $existingAccounts = $plaidConnector->accounts()->pluck('plaid_account_id');
-        if ($existingAccounts->count() > 0) {
-            $options['account_ids'] = $existingAccounts;
-        }
+
+        // $linkToken = $plaidConnector->getLinkToken();
 
         $response = $plaid->accounts->getBalance(
             access_token: $plaidConnector->access_token,
-            options: $options
+            options: array_filter([
+                'account_ids' => $existingAccounts->count() > 0 ? $existingAccounts : null
+            ])
         );
 
         $accounts = collect($response->accounts)->map(function ($plaidAccount) use ($plaidConnector) {

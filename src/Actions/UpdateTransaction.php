@@ -12,20 +12,25 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Lorisleiva\Actions\Concerns\AsAction;
 
+/**
+ * @resource https://plaid.com/docs/api/products/transactions
+ */
 class UpdateTransaction
 {
     use AsAction;
 
-    public function handle(PlaidConnector $plaidConnector, array $transactionData): Transaction
+    public function handle(PlaidConnector $plaidConnector, array $data): Transaction
     {
-        $data = $transactionData;
-
         $transaction = $plaidConnector->transactions()->firstWhere(
             'plaid_connector_transaction.plaid_transaction_id',
             $data['transaction_id']
         );
+        $category = $merchant = $location = null;
 
-        if (count(array_unique(array_keys($data['location']))) > 1) {
+        if (
+            count($locationStr = array_unique(array_keys($data['location']))) > 1 &&
+            ! empty(trim(implode('', $locationStr)))
+        ) {
             $location = Location::firstOrCreate(
                 collect($data['location'])->only([
                     'address',
@@ -46,10 +51,11 @@ class UpdateTransaction
         }
 
         $transaction->update([
-            'location_id' => $location->id ?? null,
-            'merchant_id' => $merchant->id ?? null,
-            'category_id' => $category->id ?? null,
+            'location_id' => $location?->id,
+            'merchant_id' => $merchant?->id,
+            'category_id' => $category?->id,
             'name' => $data['name'],
+            'description_original' => $data['original_description'] ?? null,
             'amount' => (float) $data['amount'],
             'payment_channel' => Str::snake($data['payment_channel']),
             'pending' => $data['pending'],

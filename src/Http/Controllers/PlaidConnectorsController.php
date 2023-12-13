@@ -75,6 +75,7 @@ class PlaidConnectorsController
             'name' => 'required|string',
             'institution_name' => 'required|string',
             'plaid_institution_id' => 'required|string',
+            'plaid_link_token_id' => 'required|string',
         ]);
 
         $apiHost = $plaid_connector->plaidApiHost();
@@ -95,6 +96,7 @@ class PlaidConnectorsController
                 'name',
                 'institution_name',
                 'plaid_institution_id',
+                'plaid_link_token_id',
             ])
         );
 
