@@ -2,6 +2,7 @@
 
 namespace Ja\LaravelPlaid\Actions;
 
+use App\Enums\CurrencyEnum;
 use App\Enums\TransactionCategoryConfidenceLevelEnum;
 use App\Models\Account;
 use App\Models\Category;
@@ -72,33 +73,10 @@ class CreateTransaction
             'amount' => (float) $data['amount'],
             'payment_channel' => Str::snake($data['payment_channel']),
             'pending' => $data['pending'],
-            'currency' => array_search($data['iso_currency_code'], Account::currencies),
+            'currency' => CurrencyEnum::from($data['iso_currency_code']),
             'transacted_at' => Carbon::parse($data['datetime'] ?? $data['date']),
             'authorized_at' => Carbon::parse($data['authorized_datetime'] ?? $data['authorized_date']),
-
-            // UNUSED FIELDS
-            // ---------------
-            // 'unofficial_currency_code' => null,
-            // 'check_number' => null,
-            // 'pending_transaction_id' => null,
-            // 'account_owner' => null,
-            // 'transaction_code' => null,
-            // 'category' => [
-            //   'Service',
-            //   'Utilities',
-            //   'Electric'
-            // ],
-            // 'payment_meta' => [
-            //   'by_order_of' => null,
-            //   'payee' => null,
-            //   'payer' => null,
-            //   'payment_method' => null,
-            //   'payment_processor' => null,
-            //   'ppd_id' => null,
-            //   'reason' => null,
-            //   'reference_number' => null
-            // ],
-
+            'plaid_transaction_snapshot' => $data,
         ]);
 
         $plaidConnector->transactions()->attach($transaction->id, [
