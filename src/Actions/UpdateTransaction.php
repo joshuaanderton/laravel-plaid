@@ -2,6 +2,7 @@
 
 namespace Ja\LaravelPlaid\Actions;
 
+use App\Enums\TransactionCategoryConfidenceLevelEnum;
 use App\Models\Account;
 use App\Models\Category;
 use App\Models\Location;
@@ -25,7 +26,8 @@ class UpdateTransaction
             'plaid_connector_transaction.plaid_transaction_id',
             $data['transaction_id']
         );
-        $category = $merchant = $location = null;
+
+        $updateData = [];
 
         if (
             count($locationStr = array_unique(array_keys($data['location']))) > 1 &&
@@ -40,20 +42,26 @@ class UpdateTransaction
                 ])->all(),
                 $data['location']
             );
+            $updateData['location_id'] = $location->id;
         }
 
-        if ($data['merchant_name'] ?? false) {
+        if (! $transaction->merchant_id && $data['merchant_name'] ?? false) {
             $merchant = Merchant::firstOrCreate(['name' => $data['merchant_name']]);
+            $updateData['merchant_id'] = $merchant->id;
         }
 
-        if ($data['category_id']) {
-            $category = Category::firstWhere('plaid_category_id', $data['category_id']);
+        if (! $transaction->category_id && $data['personal_finance_category'] ?? false) {
+            $category = Category::firstWhere([
+                'plaid_category_detailed' => $data['personal_finance_category']['detailed'],
+            ]);
+            $categoryConfidenceLevel = TransactionCategoryConfidenceLevelEnum::findByPlaidLevelKey(
+                $data['personal_finance_category']['confidence_level'] ?? 'UNKNOWN'
+            );
+            $updateData['category_id'] = $category->id;
+            $updateData['category_confidence_level'] = $categoryConfidenceLevel;
         }
 
-        $transaction->update([
-            'location_id' => $location?->id,
-            'merchant_id' => $merchant?->id,
-            'category_id' => $category?->id,
+        $transaction->update(array_merge($updateData, [
             'name' => $data['name'],
             'description_original' => $data['original_description'] ?? null,
             'amount' => (float) $data['amount'],
@@ -62,7 +70,7 @@ class UpdateTransaction
             'currency' => array_search($data['iso_currency_code'], Account::currencies),
             'transacted_at' => Carbon::parse($data['datetime'] ?? $data['date']),
             'authorized_at' => Carbon::parse($data['authorized_datetime'] ?? $data['authorized_date']),
-        ]);
+        ]));
 
         return $transaction;
     }

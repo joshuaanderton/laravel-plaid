@@ -2,6 +2,7 @@
 
 namespace Ja\LaravelPlaid\Actions;
 
+use App\Enums\TransactionCategoryConfidenceLevelEnum;
 use App\Models\Account;
 use App\Models\Category;
 use App\Models\Location;
@@ -25,6 +26,10 @@ class CreateTransaction
         $plaidConnectorAccount = PlaidConnectorAccount::firstWhere('plaid_account_id', $data['account_id']);
         $category = $merchant = $location = null;
 
+        if ($plaidConnector->transactions()->where('plaid_connector_transaction.plaid_transaction_id', $data['transaction_id'])->exists()) {
+            return UpdateTransaction::run($plaidConnector, $data);
+        }
+
         if (
             count($locationStr = array_unique(array_keys($data['location']))) > 1 &&
             ! empty(trim(implode('', $locationStr)))
@@ -45,8 +50,13 @@ class CreateTransaction
             $merchant = Merchant::firstOrCreate(['name' => $data['merchant_name']], $merchantData ?? []);
         }
 
-        if ($data['category_id']) {
-            $category = Category::firstWhere('plaid_category_id', $data['category_id']);
+        if ($data['personal_finance_category'] ?? false) {
+            $category = Category::firstWhere([
+                'plaid_category_detailed' => $data['personal_finance_category']['detailed'],
+            ]);
+            $categoryConfidenceLevel = TransactionCategoryConfidenceLevelEnum::findByPlaidLevelKey(
+                $data['personal_finance_category']['confidence_level'] ?? 'UNKNOWN'
+            );
         }
 
         $team = $plaidConnector->team()->first();
@@ -56,6 +66,7 @@ class CreateTransaction
             'location_id' => $location?->id,
             'merchant_id' => $merchant?->id,
             'category_id' => $category?->id,
+            'category_confidence_level' => $categoryConfidenceLevel,
             'name' => $data['name'],
             'description_original' => $data['original_description'] ?? null,
             'amount' => (float) $data['amount'],
