@@ -2,9 +2,9 @@
 
 namespace Ja\LaravelPlaid\Actions;
 
+use Ja\LaravelPlaid\Enums\CurrencyEnum;
 use App\Models\Account;
 use App\Models\PlaidConnector;
-use Exception;
 use Illuminate\Support\Str;
 use TomorrowIdeas\Plaid\Plaid;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -42,7 +42,7 @@ class ImportAccounts
 
             $data = [
                 'team_id' => $plaidConnector->team_id,
-                'balance_currency' => $plaidAccount->balances->iso_currency_code,
+                'balance_currency' => CurrencyEnum::fromName((string) str($plaidAccount->balances->iso_currency_code)->upper()),
                 'balance_available' => $plaidAccount->balances->available,
                 'balance_current' => $plaidAccount->balances->current,
                 'balance_limit' => $plaidAccount->balances->limit,

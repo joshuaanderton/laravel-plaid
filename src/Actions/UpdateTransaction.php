@@ -2,7 +2,7 @@
 
 namespace Ja\LaravelPlaid\Actions;
 
-use App\Enums\CurrencyEnum;
+use Ja\LaravelPlaid\Enums\CurrencyEnum;
 use App\Enums\TransactionCategoryConfidenceLevelEnum;
 use App\Models\Account;
 use App\Models\Category;
