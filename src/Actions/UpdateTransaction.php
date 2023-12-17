@@ -68,7 +68,7 @@ class UpdateTransaction
             'amount' => (float) $data['amount'],
             'payment_channel' => Str::snake($data['payment_channel']),
             'pending' => $data['pending'],
-            'currency' => CurrencyEnum::from($data['iso_currency_code']),
+            'currency' => CurrencyEnum::fromName((string) str($data['iso_currency_code'])->upper()),
             'transacted_at' => Carbon::parse($data['datetime'] ?? $data['date']),
             'authorized_at' => Carbon::parse($data['authorized_datetime'] ?? $data['authorized_date']),
             'plaid_transaction_snapshot' => $data,
