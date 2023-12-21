@@ -50,6 +50,23 @@ class PlaidConnectorsController
         return $response['link_token'];
     }
 
+    public function import(Request $request, PlaidConnector $plaid_connector)
+    {
+        $team = $request->user()->currentTeam;
+        abort_if($team->id !== $plaid_connector->team_id, 403);
+
+        ImportAccounts::run($plaid_connector);
+
+        if ($plaid_connector->requires_reconnect) {
+            session()->flash('flash.banner', __("Please reconnect {$plaid_connector->name}"));
+            session()->flash('flash.bannerStyle', 'danger');
+        } else {
+            session()->flash('flash.banner', __("Started new import for {$plaid_connector->name}"));
+        }
+
+        return redirect()->back();
+    }
+
     public function updateName(Request $request, PlaidConnector $plaid_connector)
     {
         $team = $request->user()->currentTeam;
@@ -75,7 +92,6 @@ class PlaidConnectorsController
             'name' => 'required|string',
             'institution_name' => 'required|string',
             'plaid_institution_id' => 'required|string',
-            'plaid_link_token_id' => 'required|string',
         ]);
 
         $apiHost = $plaid_connector->plaidApiHost();
@@ -96,7 +112,6 @@ class PlaidConnectorsController
                 'name',
                 'institution_name',
                 'plaid_institution_id',
-                'plaid_link_token_id',
             ])
         );
 
@@ -116,7 +131,6 @@ class PlaidConnectorsController
             'name' => 'required|string',
             'institution_name' => 'required|string',
             'plaid_institution_id' => 'required|string',
-            'plaid_link_token_id' => 'required|string',
         ]);
 
         $apiHost = (new PlaidConnector)->plaidApiHost();
@@ -138,7 +152,6 @@ class PlaidConnectorsController
                 'name',
                 'institution_name',
                 'plaid_institution_id',
-                'plaid_link_token_id',
             ])
         );
 

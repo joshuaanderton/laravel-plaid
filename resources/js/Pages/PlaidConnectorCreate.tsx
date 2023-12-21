@@ -18,7 +18,6 @@ const PlaidConnectorCreate: React.FC<PageProps> = ({ teams, plaidLinkToken, plai
     name: '',
     institution_name: null,
     plaid_institution_id: null,
-    plaid_link_token_id: null
   })
 
   let config = {
@@ -32,7 +31,6 @@ const PlaidConnectorCreate: React.FC<PageProps> = ({ teams, plaidLinkToken, plai
         name: metadata.institution.name,
         institution_name: metadata.institution.name,
         plaid_institution_id: metadata.institution.institution_id,
-        plaid_link_token_id: plaidLinkToken,
       })
       form.post(plaidRoutes.store)
     }

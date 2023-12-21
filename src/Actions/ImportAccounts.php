@@ -5,6 +5,8 @@ namespace Ja\LaravelPlaid\Actions;
 use Ja\LaravelPlaid\Enums\CurrencyEnum;
 use App\Models\Account;
 use App\Models\PlaidConnector;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Str;
 use TomorrowIdeas\Plaid\Plaid;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -15,9 +17,9 @@ class ImportAccounts
 
     public function handle(PlaidConnector $plaidConnector): array
     {
-        if ($plaidConnector->requires_reconnect) {
-            return [];
-        }
+        // if ($plaidConnector->requires_reconnect) {
+            // return [];
+        // }
 
         $plaid = new Plaid(
             env('PLAID_CLIENT_ID'),
@@ -27,14 +29,17 @@ class ImportAccounts
 
         $existingAccounts = $plaidConnector->accounts()->pluck('plaid_account_id');
 
-        // $linkToken = $plaidConnector->getLinkToken();
-
-        $response = $plaid->accounts->getBalance(
-            access_token: $plaidConnector->access_token,
-            options: array_filter([
-                'account_ids' => $existingAccounts->count() > 0 ? $existingAccounts : null
-            ])
-        );
+        try {
+            $response = $plaid->accounts->getBalance(
+                access_token: $plaidConnector->access_token,
+                options: array_filter([
+                    'account_ids' => $existingAccounts->count() > 0 ? $existingAccounts : null
+                ])
+            );
+        } catch (Exception $e) {
+            $plaidConnector->update(['requires_reconnect' => true]);
+            return [];
+        }
 
         $accounts = collect($response->accounts)->map(function ($plaidAccount) use ($plaidConnector) {
 

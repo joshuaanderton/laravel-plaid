@@ -23,10 +23,11 @@ class ServiceProvider extends BaseServiceProvider
 
     protected function registerRouterMacro(): void
     {
-        Router::macro('plaid', function (?string $as = 'plaid_connectors') {
-            Route::resource($as, PlaidConnectorsController::class, ['except' => ['destroy']]);
-            Route::resource('webhooks', PlaidWebhooksController::class, compact('as'));
-            Route::put('plaid_connectors/update-name', [PlaidConnectorsController::class, 'updateName'])->name('plaid_connectors.update-name');
+        Router::macro('plaid', function () {
+            Route::resource('plaid_connectors', PlaidConnectorsController::class, ['except' => ['destroy']]);
+            Route::post('plaid_connectors/{plaid_connector}/import', [PlaidConnectorsController::class, 'import'])->name('plaid_connectors.import');
+            Route::put('plaid_connectors/{plaid_connector}/update-name', [PlaidConnectorsController::class, 'updateName'])->name('plaid_connectors.update-name');
+            Route::resource('webhooks', PlaidWebhooksController::class);
         });
     }
 
