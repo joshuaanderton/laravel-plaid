@@ -27,7 +27,7 @@ class ServiceProvider extends BaseServiceProvider
             Route::resource('plaid_connectors', PlaidConnectorsController::class, ['except' => ['destroy']]);
             Route::post('plaid_connectors/{plaid_connector}/import', [PlaidConnectorsController::class, 'import'])->name('plaid_connectors.import');
             Route::put('plaid_connectors/{plaid_connector}/update-name', [PlaidConnectorsController::class, 'updateName'])->name('plaid_connectors.update-name');
-            Route::resource('webhooks', PlaidWebhooksController::class);
+            Route::resource('webhooks', PlaidWebhooksController::class, ['as' => 'plaid_connectors']);
         });
     }
 
