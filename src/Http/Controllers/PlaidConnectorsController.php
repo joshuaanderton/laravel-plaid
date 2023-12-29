@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Inertia\Inertia;
 use Ja\LaravelPlaid\Actions\ImportAccounts;
+use Ja\LaravelPlaid\Actions\ImportTransactions;
 
 class PlaidConnectorsController
 {
@@ -55,7 +56,7 @@ class PlaidConnectorsController
         $team = $request->user()->currentTeam;
         abort_if($team->id !== $plaid_connector->team_id, 403);
 
-        ImportAccounts::run($plaid_connector);
+        ImportTransactions::dispatch($plaid_connector);
 
         if ($plaid_connector->requires_reconnect) {
             session()->flash('flash.banner', __("Please reconnect {$plaid_connector->name}"));
@@ -155,9 +156,9 @@ class PlaidConnectorsController
             ])
         );
 
-        $plaidConnector = $team->plaidConnectors()->create($data);
+        $plaid_connector = $team->plaidConnectors()->create($data);
 
-        ImportAccounts::dispatch($plaidConnector);
+        ImportAccounts::dispatch($plaid_connector);
 
         session()->flash('flash.banner', __('Account connected successfully.'));
 
@@ -186,4 +187,22 @@ class PlaidConnectorsController
             'plaidConnectors' => $request->user()->currentTeam->plaidConnectors
         ]);
     }
+
+    public function destroy(Request $request, PlaidConnector $plaid_connector)
+    {
+        $team = $request->user()->currentTeam;
+        abort_if($team->id !== $plaid_connector->team_id, 403);
+
+        $plaid_connector->delete();
+
+        session()->flash('flash.banner', __('Account connection deleted successfully.'));
+
+        return redirect()->route('plaid_connectors.index');
+    }
+
+    // public function handleWebhooks(Request $request)
+    // {
+    //     $request->webhook_type === 'TRANSACTIONS'
+    //     $request->webhook_code === 'SYNC_UPDATES_AVAILABLE'
+    // }
 }

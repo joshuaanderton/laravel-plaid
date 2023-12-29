@@ -4,10 +4,10 @@ namespace Ja\LaravelPlaid\Actions;
 
 use App\Models\PlaidConnector;
 use Illuminate\Console\Command;
-use Ja\LaravelPlaid\Actions\ImportAccounts;
+use Ja\LaravelPlaid\Actions\ImportTransactions;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class QueueImportAccounts
+class QueueImportTransactions
 {
     use AsAction;
 
@@ -16,7 +16,7 @@ class QueueImportAccounts
     public function handle(): void
     {
         PlaidConnector::get()->map(fn ($plaidConnector) => (
-            ImportAccounts::dispatch($plaidConnector)
+            ImportTransactions::dispatch($plaidConnector)
         ));
     }
 

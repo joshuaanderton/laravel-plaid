@@ -17,9 +17,9 @@ class ImportAccounts
 
     public function handle(PlaidConnector $plaidConnector): array
     {
-        // if ($plaidConnector->requires_reconnect) {
-            // return [];
-        // }
+        if ($plaidConnector->requires_reconnect) {
+            return [];
+        }
 
         $plaid = new Plaid(
             env('PLAID_CLIENT_ID'),
