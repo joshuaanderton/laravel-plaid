@@ -4,6 +4,7 @@ namespace Ja\LaravelPlaid\Actions;
 
 use App\Models\PlaidConnector;
 use App\Services\PlaidTransactions;
+use Exception;
 use Ja\LaravelPlaid\Actions\CreateTransaction;
 use Ja\LaravelPlaid\Actions\UpdateTransaction;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -20,6 +21,15 @@ class ImportTransactions
                 count: 500
             )
         );
+
+        if ($response['error_code'] ?? null) {
+            if (str($response['error_message'])->contains('the login details of this item have changed')) {
+                $plaidConnector->update(['requires_reconnect' => true]);
+                return;
+            }
+
+            throw new Exception($response['error_message']);
+        }
 
         $added = collect(
             $response['added'] ?? []
